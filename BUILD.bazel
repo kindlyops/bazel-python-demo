@@ -1,28 +1,23 @@
-load("@bazel_gazelle//:def.bzl", "gazelle")
-load("@rules_python//python:defs.bzl", "py_binary")
-load("@//:requirements.bzl", "pypi_libraries", "requirement")
-
-pypi_libraries()
-
-# gazelle:prefix github.com/kindlyops/bazel-python-demo
-gazelle(name = "gazelle")
-
 load("@io_bazel_rules_docker//python3:image.bzl", "py3_image")
-load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+load("@pip_deps//:requirements.bzl", "requirement")
 
-py_binary(
-    name = "demo",
-    srcs = ["demo.py"],
-    deps = [
-        requirement("numpy"),
-    ],
-)
+
+
+# py_binary(
+#     name = "demo",
+#     srcs = ["demo.py"],
+#     deps = [
+#         requirement("numpy"),
+#     ],
+# )
+
+exports_files(["requirements.txt"])
 
 py3_image(
     name = "ddemo",
     srcs = ["demo.py"],
     main = "demo.py",
-    deps = [requirement("numpy")],
+    deps = [requirement("dbt")],
 )
 
 # py_image(

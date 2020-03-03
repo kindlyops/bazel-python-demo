@@ -1,10 +1,21 @@
-## updating python deps
+# updating python deps
 
-    bazel run @rules_pygen//:generator -- $(pwd)/requirements.txt $(pwd)/requirements.bzl //3rdparty/python --python=37
+You need the pip-compile command from the pip-tools package, update requirements.in
+then run pip-compile as shown in the comments at the top of requirements.txt.
 
-## limitations
+# running the docker image locally
 
-This requires python wheels. If you need to use a package which has not
-published wheels, you must create a private PyPI repo and publish the missing
-wheels. For example, nbconvert depends on pandocfilters, which has not yet
-published wheels: https://github.com/jgm/pandocfilters/issues/80
+
+
+    # see https://github.com/bazelbuild/rules_docker#debugging-lang_image-rules
+    # the -c dbg says to use the distroless container with extra debugging support
+    # the --norun flag says to not invoke docker run
+    # this command will take the generated docker tar layer and import it to
+    # the local docker daemon so we can work with the image.
+    bazel run -c dbg //:ddemo -- --norun
+
+    # take a look at the configured docker image entrypoints and metadata
+    docker inspect bazel:ddemo
+
+    # look around inside the image with a shell
+    docker run -ti --rm --entrypoint=sh bazel:ddemo
