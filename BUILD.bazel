@@ -1,16 +1,6 @@
 load("@io_bazel_rules_docker//python3:image.bzl", "py3_image")
 load("@pip_deps//:requirements.bzl", "requirement")
 
-
-
-# py_binary(
-#     name = "demo",
-#     srcs = ["demo.py"],
-#     deps = [
-#         requirement("numpy"),
-#     ],
-# )
-
 exports_files(["requirements.txt"])
 
 py3_image(
@@ -20,16 +10,11 @@ py3_image(
     deps = [requirement("dbt")],
 )
 
-# py_image(
-#     name = "container",
-#     binary = "@com_github_containous_whoami//:whoami",
-# )
+py3_image(
+    name = "numpy",
+    srcs = ["numpy-test.py"],
+    main = "numpy-test.py",
+    deps = [requirement("numpy")],
+)
 
-# container_push(
-#     name = "push",
-#     format = "Docker",
-#     image = ":container",
-#     registry = "gcr.io",
-#     repository = "example-service",
-#     visibility = ["//visibility:public"],
-# )
+

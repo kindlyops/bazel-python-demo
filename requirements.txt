@@ -49,6 +49,7 @@ markupsafe==1.1.1         # via jinja2
 minimal-snowplow-tracker==0.0.2  # via dbt-core
 more-itertools==8.2.0     # via pytest
 networkx==2.4             # via dbt-core
+numpy==1.18.1             # via -r requirements.in
 oscrypto==1.2.0           # via snowflake-connector-python
 packaging==20.1           # via pytest
 parsedatetime==2.5        # via agate
