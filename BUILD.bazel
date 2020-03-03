@@ -14,7 +14,7 @@ load("@pip_deps//:requirements.bzl", "requirement")
 exports_files(["requirements.txt"])
 
 py3_image(
-    name = "ddemo",
+    name = "dbt",
     srcs = ["demo.py"],
     main = "demo.py",
     deps = [requirement("dbt")],
