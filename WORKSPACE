@@ -4,25 +4,26 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "com_github_ali5h_rules_pip",
-    urls = ["https://github.com/ali5h/rules_pip/archive/2.0.1.tar.gz"],
-    strip_prefix = "rules_pip-2.0.1",
-    sha256 = "befa5df35a7cd6e8f230e50f66128b468b0d7fdd9d960090701efc40c349b42e",
+    sha256 = "c8c11f219642ab94cb3f4a5ff25aadda6fb6dcb0c77329021e843a7e7ba294d1",
+    strip_prefix = "rules_pip-2.1.0",
+    urls = ["https://github.com/ali5h/rules_pip/archive/2.1.0.tar.gz"],
 )
 
 load("@com_github_ali5h_rules_pip//:defs.bzl", "pip_import")
 
 pip_import(
-   name = "pip_deps",
-   requirements = "//:requirements.txt",
+    name = "pip_deps",
 
-   # default value is "python"
-   python_interpreter="python3.7",
+    # set compile to false only if requirements files is already compiled
+    compile = False,
 
-   # set compile to false only if requirements files is already compiled
-   compile = False
+    # default value is "python"
+    python_interpreter = "python3.7",
+    requirements = "//:requirements.txt",
 )
 
 load("@pip_deps//:requirements.bzl", "pip_install")
+
 pip_install([
     "--only-binary",
     ":all",
@@ -48,6 +49,7 @@ load(
     "@io_bazel_rules_docker//repositories:repositories.bzl",
     container_repositories = "repositories",
 )
+
 container_repositories()
 
 load(
