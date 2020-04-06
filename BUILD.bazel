@@ -1,7 +1,20 @@
+load("@rules_python//python:defs.bzl", "py_runtime")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 load("@io_bazel_rules_docker//python3:image.bzl", "py3_image")
 load("@pip_deps//:requirements.bzl", "requirement")
 
 exports_files(["requirements.txt"])
+
+container_image(
+    name = "python3_base",
+    base = "@python3_slim_base//image",
+    symlinks = {
+        "/usr/bin/python": "/usr/local/bin/python",
+        "/usr/bin/python3": "/usr/local/bin/python3",
+        "/usr/bin/python3.7": "/usr/local/bin/python3",
+    },
+    visibility = ["//visibility:public"],
+)
 
 py3_image(
     name = "dbt",
@@ -13,8 +26,29 @@ py3_image(
 py3_image(
     name = "numpy",
     srcs = ["numpy-test.py"],
+    base = "//:python3_base",
     main = "numpy-test.py",
+    srcs_version = "PY3",
     deps = [requirement("numpy")],
 )
 
+load("@bazel_tools//tools/python:toolchain.bzl", "py_runtime_pair")
 
+py_runtime(
+    name = "py3",
+    interpreter = "py3.sh",
+    python_version = "PY3",
+)
+
+py_runtime_pair(
+    name = "py_runtime_pair",
+    py3_runtime = ":py3",
+)
+
+toolchain(
+    name = "toolchain",
+    exec_compatible_with = [],
+    target_compatible_with = [],
+    toolchain = ":py_runtime_pair",
+    toolchain_type = "@bazel_tools//tools/python:toolchain_type",
+)

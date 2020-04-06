@@ -13,10 +13,8 @@ load("@com_github_ali5h_rules_pip//:defs.bzl", "pip_import")
 
 pip_import(
     name = "pip_deps",
-
     # set compile to false only if requirements files is already compiled
     compile = False,
-
     # default value is "python"
     python_interpreter = "python3.7",
     requirements = "//:requirements.txt",
@@ -66,9 +64,18 @@ container_pull(
 
 container_pull(
     name = "py3_image_debug_base",
-    digest = "sha256:f97bd0f617c97a06975dee48b38ce4ee91cf9348f33096cedab1e169eea98cde",
+    digest = "sha256:116673d45797e5a328ffc1e2c8aa99a372f65f431bc9dc43326af688acae5559",
     registry = "gcr.io",
     repository = "distroless/python3-debian10",
+)
+# gcr.io/distroless/python3@sha256:bb006471a533e2b3336c7f26cb578514f1d732a8fd6836c1fa8279abb7a5007c
+
+container_pull(
+    name = "python3_slim_base",
+    digest = "sha256:994806eb256bc1554ca381cf52c0ba5612192f42b7f93a93e91f9fdb6078ec52",
+    registry = "index.docker.io",
+    repository = "python",
+    tag = "3.7.7-slim-buster",
 )
 
 load(
@@ -77,3 +84,15 @@ load(
 )
 
 _py_image_repos()
+
+load("@com_github_ali5h_rules_pip//third_party/cpython:configure.bzl", "python_configure")
+
+python_configure(
+    name = "cpython37",
+    interpreter = "python3.7",
+)
+
+# added at the end to not override rules_docker
+register_toolchains(
+    "@//:toolchain",
+)
