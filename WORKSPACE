@@ -4,44 +4,55 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "com_github_ali5h_rules_pip",
-    urls = ["https://github.com/ali5h/rules_pip/archive/2.0.1.tar.gz"],
-    strip_prefix = "rules_pip-2.0.1",
-    sha256 = "befa5df35a7cd6e8f230e50f66128b468b0d7fdd9d960090701efc40c349b42e",
+    strip_prefix = "rules_pip-3.0.0",
+    sha256 = "630a7cab43a87927353efca116d20201df88fb443962bf01c7383245c7f3a623",
+    urls = ["https://github.com/ali5h/rules_pip/archive/3.0.0.tar.gz"],
+)
+
+load("@com_github_ali5h_rules_pip//third_party/cpython:configure.bzl", "python_configure")
+python_configure(
+    name = "cpython37",
+    interpreter = "python3.7",
 )
 
 load("@com_github_ali5h_rules_pip//:defs.bzl", "pip_import")
 
 pip_import(
-   name = "pip_deps",
-   requirements = "//:requirements.txt",
-
-   # default value is "python"
-   python_interpreter="python3.7",
-
-   # set compile to false only if requirements files is already compiled
-   compile = False
+    name = "pip_deps",
+    requirements = "//:requirements.txt",
+    timeout = 1200,
+    python_interpreter="python3",
+    # set compile to false only if requirements files is already compiled
+    compile = False,
 )
 
 load("@pip_deps//:requirements.bzl", "pip_install")
+
+# uncomment this version to be able to run `bazel run :dbt` and have the script
+# work inside the linux docker image
 pip_install([
     "--only-binary",
     ":all",
+    "--python-version",
+    "3.7",
     "--platform",
     "manylinux1_x86_64",
 ])
 
-#load("@com_github_ali5h_rules_pip//third_party/cpython:configure.bzl", "python_configure")
-# python_configure(
-#     name = "cpython37",
-#     interpreter = "python3.7",
-# )
+# uncomment this version to be able to run `bazel run :demo` on macos
+# pip_install([
+#     "--only-binary",
+#     ":all",
+#     "--python-version",
+#     "3.8",
+# ])
 
-# Download the rules_docker repository at release v0.14.1
+# Download the rules_docker repository at release v0.14.3
 http_archive(
     name = "io_bazel_rules_docker",
-    sha256 = "dc97fccceacd4c6be14e800b2a00693d5e8d07f69ee187babfd04a80a9f8e250",
-    strip_prefix = "rules_docker-0.14.1",
-    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.14.1/rules_docker-v0.14.1.tar.gz"],
+    sha256 = "6287241e033d247e9da5ff705dd6ef526bac39ae82f3d17de1b69f8cb313f9cd",
+    strip_prefix = "rules_docker-0.14.3",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.14.3/rules_docker-v0.14.3.tar.gz"],
 )
 
 load(
@@ -50,24 +61,31 @@ load(
 )
 container_repositories()
 
-load(
-    "@io_bazel_rules_docker//container:container.bzl",
-    "container_pull",
-)
+load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 
 container_pull(
     name = "py3_image_base",
     digest = "sha256:d5a717649fd93ea5b9c430d7f84e4c37ba219eb53bd73ed1d4a5a98e9edd84a7",
     registry = "gcr.io",
     repository = "distroless/python3-debian10",
+    tag = "latest",
 )
 
-container_pull(
-    name = "py3_image_debug_base",
-    digest = "sha256:f97bd0f617c97a06975dee48b38ce4ee91cf9348f33096cedab1e169eea98cde",
-    registry = "gcr.io",
-    repository = "distroless/python3-debian10",
-)
+# container_pull(
+#     name = "py3_image_base",
+#     digest = "sha256:06eebac4816c6925def80c34e166cad58590b57ba4500f1c949d10ca3e3528ed",
+#     registry = "index.docker.io",
+#     repository = "python:3.8-slim-buster",
+#     tag = "latest",
+# )
+
+# container_pull(
+#     name = "py3_debug_image_base",
+#     digest = "sha256:1263e44463749a43b0fdb41472b2fedf22a433b994be65af06266422096de2b7",
+#     registry = "gcr.io",
+#     repository = "distroless/python3-debian10",
+#     tag = "debug",
+# )
 
 load(
     "@io_bazel_rules_docker//python3:image.bzl",
