@@ -1,15 +1,18 @@
 load("@io_bazel_rules_docker//python3:image.bzl", "py3_image")
+load("@io_bazel_rules_docker//container:image.bzl")
 load("@pip_deps//:requirements.bzl", "requirement")
 
 
 
-# py_binary(
-#     name = "demo",
-#     srcs = ["demo.py"],
-#     deps = [
-#         requirement("numpy"),
-#     ],
-# )
+py_binary(
+    name = "demo",
+    srcs = ["demo.py"],
+    python_version = "PY3",
+    deps = [
+        requirement("dbt"),
+        requirement("psycopg2-binary"),
+    ],
+)
 
 exports_files(["requirements.txt"])
 
@@ -17,13 +20,12 @@ py3_image(
     name = "dbt",
     srcs = ["demo.py"],
     main = "demo.py",
-    deps = [requirement("dbt")],
+    deps = [
+        requirement("dbt"),
+        requirement("psycopg2-binary"),
+    ],
 )
 
-# py_image(
-#     name = "container",
-#     binary = "@com_github_containous_whoami//:whoami",
-# )
 
 # container_push(
 #     name = "push",

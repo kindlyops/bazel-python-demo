@@ -1,9 +1,12 @@
-#!/usr/bin/env python3
+#!/usr/bin/env py3
 
-#import numpy as np
-import dbt.main
 from pprint import pprint
 import sys
+
+pprint(sys.version_info)
+
+import psycopg2
+import dbt.main
 
 if __name__ == "__main__":
     pprint(sys.version)
