@@ -1,8 +1,7 @@
 load("@io_bazel_rules_docker//python3:image.bzl", "py3_image")
-load("@io_bazel_rules_docker//container:image.bzl")
-load("@pip_deps//:requirements.bzl", "requirement")
-
-
+load("@default_pip_deps//:requirements.bzl", "requirement")
+load("@container_pip_deps//:requirements.bzl", container_requirement = "requirement")
+load("@rules_python//python:defs.bzl", "py_binary")
 
 py_binary(
     name = "demo",
@@ -21,8 +20,8 @@ py3_image(
     srcs = ["demo.py"],
     main = "demo.py",
     deps = [
-        requirement("dbt"),
-        requirement("psycopg2-binary"),
+        container_requirement("dbt"),
+        container_requirement("psycopg2-binary"),
     ],
 )
 
