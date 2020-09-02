@@ -36,6 +36,15 @@ filegroup(
 """,
 )
 
+# grabbing version that allows configurable repo-prefix 
+# https://github.com/ali5h/rules_pip/pull/39
+http_archive(
+    name = "com_github_ali5h_rules_pip",
+    sha256 = "8d0148aa1df8196e4222549b47ad7af93e812aaf5b9e8cc6af8987caf614cac8",
+    strip_prefix = "rules_pip-34c407a2e791a5b6a99fd685d233e94a891a2f61",
+    urls = ["https://github.com/ali5h/rules_pip/archive/34c407a2e791a5b6a99fd685d233e94a891a2f61.tar.gz"],
+)
+
 git_repository(
     name = "rules_python",
     remote = "https://github.com/bazelbuild/rules_python.git",
@@ -46,19 +55,49 @@ load("@rules_python//python:repositories.bzl", "py_repositories")
 
 py_repositories()
 
-load("@rules_python//python:pip.bzl", "pip_repositories", "pip_import")
+# load("@rules_python//python:pip.bzl", "pip_repositories", "pip_import")
+# pip_repositories()
 
-pip_repositories()
+load("@com_github_ali5h_rules_pip//:defs.bzl", "pip_import")
+
+
 
 pip_import(
-    name = "py_deps",
+    name = "container_pip_deps",
     requirements = "//:requirements.txt",
-    python_interpreter_target = "@python_interpreter//:python_bin",
+    timeout = 1200,
+    python_interpreter="python3",
+    # set compile to false only if requirements files is already compiled
+    compile = False,
+    repo_prefix = "containerpypi",
 )
 
-load("@py_deps//:requirements.bzl", "pip_install")
+pip_import(
+    name = "default_pip_deps",
+    requirements = "//:requirements.txt",
+    timeout = 1200,
+    python_runtime = "@python_interpreter//:python_bin",
+    # set compile to false only if requirements files is already compiled
+    compile = False,
+    repo_prefix = "defaultpypi",
+)
 
-pip_install()
+load("@container_pip_deps//:requirements.bzl", container_pip_install = "pip_install")
+load("@default_pip_deps//:requirements.bzl", default_pip_install = "pip_install")
+
+# uncomment this version to be able to run `bazel run :dbt` and have the script
+# work inside the linux docker image
+container_pip_install([
+    "--only-binary=:all",
+    "--python-version=3.7",
+    "--platform=manylinux1_x86_64",
+])
+
+# this version to be able to run `bazel run :demo` on macos
+default_pip_install([
+    "--only-binary=:all",
+    "--python-version=3.8",
+])
 
 # Download the rules_docker repository at release v0.14.3
 http_archive(

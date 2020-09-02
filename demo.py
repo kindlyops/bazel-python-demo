@@ -2,9 +2,6 @@
 
 from pprint import pprint
 import sys
-
-pprint(sys.version_info)
-
 import psycopg2
 import dbt.main
 
