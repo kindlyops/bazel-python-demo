@@ -46,11 +46,9 @@ load("@rules_python//python:repositories.bzl", "py_repositories")
 
 py_repositories()
 
-load("@rules_python//python:pip.bzl", "pip_repositories")
+load("@rules_python//python:pip.bzl", "pip_repositories", "pip_import")
 
 pip_repositories()
-
-load("@rules_python//python:pip.bzl", "pip_import")
 
 pip_import(
     name = "py_deps",
