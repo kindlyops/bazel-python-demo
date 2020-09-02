@@ -5,6 +5,9 @@ then run pip-compile as shown in the comments at the top of requirements.txt.
 
 # running the docker image locally
 
+    # debug toolchain resolution
+    bazel run :dbt --toolchain_resolution_debug
+
     bazel run :demo # no docker, executing with python toolchain on host
     bazel run :dbt # docker, executing with linux python inside container
 
